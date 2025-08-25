@@ -1,4 +1,5 @@
-﻿using api_cinema_challenge.Repository;
+﻿using api_cinema_challenge.DOTs.ScreeningDTOs;
+using api_cinema_challenge.Repository;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -22,5 +23,21 @@ namespace api_cinema_challenge.Models
         public List<Ticket> Tickets { get; set; } = new List<Ticket>();
         [Column("screening_movie")]
         public Movie Movie { get; set; }
+
+        public DateTime CreatedAt {  get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public Screening()
+        {
+            CreatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
+        }
+        public Screening(ScreeningPost newScreening)
+        {
+            ScreenNumber = newScreening.ScreenNumber;
+            Capacity = newScreening.Capacity;
+            StartsAt = newScreening.StartAt;
+            CreatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
+        }
     }
 }

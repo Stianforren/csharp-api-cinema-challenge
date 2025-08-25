@@ -15,6 +15,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<CinemaContext>();
 builder.Services.AddScoped<IGenericRepository<Customer>, GenericRepository<Customer>>();
 builder.Services.AddScoped<IGenericRepository<Movie>, GenericRepository<Movie>>();
+builder.Services.AddScoped<IGenericRepository<Screening>, GenericRepository<Screening>>();
 
 
 

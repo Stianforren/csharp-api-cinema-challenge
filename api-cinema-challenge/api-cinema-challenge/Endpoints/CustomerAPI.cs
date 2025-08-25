@@ -2,6 +2,7 @@
 using api_cinema_challenge.Models;
 using api_cinema_challenge.Repository;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata.Ecma335;
 
 
 namespace api_cinema_challenge.Endpoints
@@ -10,19 +11,19 @@ namespace api_cinema_challenge.Endpoints
     {
         public static void ConfigueCustomer(this WebApplication app)
         {
-            var customerGroup = app.MapGroup("customer");
+            var customerGroup = app.MapGroup("customers");
 
             customerGroup.MapGet("/", GetCustomers);
             customerGroup.MapGet("/customer{id}", GetCustomerById);
             customerGroup.MapPost("/", CreateCustomer);
-            customerGroup.MapPut("/customer{id}", UpdateCustomer);
-            customerGroup.MapDelete("/customer{id}", DeleteCustomer);
+            customerGroup.MapPut("/{id}", UpdateCustomer);
+            customerGroup.MapDelete("/{id}", DeleteCustomer);
         }
 
         private static async Task<IResult> GetCustomers(IGenericRepository<Customer> repository)
         {
             var response = await repository.GetWithIncludes(q => q.Include(p => p.Tickets).ThenInclude(t => t.Screening).ThenInclude(s => s.Movie));
-            var result = response.Select(c => new CustomerGet(c));
+            var result = response.Select(c => new CustomerGetNoExtra(c));
             return TypedResults.Ok(result);
         }
 
@@ -32,7 +33,7 @@ namespace api_cinema_challenge.Endpoints
                                                                         .Include(p => p.Tickets)
                                                                         .ThenInclude(t => t.Screening)
                                                                         .ThenInclude(s => s.Movie).FirstOrDefaultAsync().Result);
-            var result = new CustomerGet(response);
+            var result = new CustomerGetNoExtra(response);
 
             return TypedResults.Ok(result);
         }
@@ -41,7 +42,8 @@ namespace api_cinema_challenge.Endpoints
         {
             Customer customer = new Customer(newCustomer);
             var response = await repository.Create(customer);
-            return TypedResults.Created("", newCustomer);
+            CustomerGetNoExtra customerFormated = new CustomerGetNoExtra(response);
+            return TypedResults.Created("", customerFormated);
         }
 
         private static async Task<IResult> UpdateCustomer(IGenericRepository<Customer> repository, int id, CustomerPut model)
@@ -53,8 +55,9 @@ namespace api_cinema_challenge.Endpoints
             if (model.Name is not null) entity.Name = model.Name;
             if (model.Email is not null) entity.Email = model.Email;
             if (model.Phone is not null) entity.Phone = model.Phone;
+            entity.UpdatedAt = DateTime.UtcNow;
             var response = await repository.Update(entity);
-            return TypedResults.Created("",new CustomerGet(response));
+            return TypedResults.Created("", new CustomerGetNoExtra(response));
         }
         private static async Task<IResult> DeleteCustomer(IGenericRepository<Customer> repository, int id)
         {

@@ -20,12 +20,20 @@ namespace api_cinema_challenge.Models
         [Column("customer_tickets")]
         public List<Ticket> Tickets { get; set; } = new List<Ticket>();
 
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public Customer(CustomerPost newCustomer)
         {
             Name = newCustomer.Name;
             Email = newCustomer.Email;
             Phone = newCustomer.Phone;
+            CreatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
         }
-        public Customer() { }
+        public Customer() 
+        { 
+            CreatedAt= DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
+        }
     }
 }
