@@ -1,6 +1,7 @@
 ﻿using api_cinema_challenge.DOTs.CustomerDTOs;
 using api_cinema_challenge.Models;
 using api_cinema_challenge.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
 
@@ -20,6 +21,7 @@ namespace api_cinema_challenge.Endpoints
             customerGroup.MapDelete("/{id}", DeleteCustomer);
         }
 
+
         private static async Task<IResult> GetCustomers(IGenericRepository<Customer> repository)
         {
             var response = await repository.GetWithIncludes(q => q.Include(p => p.Tickets).ThenInclude(t => t.Screening).ThenInclude(s => s.Movie));
@@ -27,6 +29,7 @@ namespace api_cinema_challenge.Endpoints
             return TypedResults.Ok(result);
         }
 
+        [Authorize(Roles = "User")]
         private static async Task<IResult> GetCustomerById(IGenericRepository<Customer> repository, int id)
         {
             var response = await repository.GetByIdWithIncludes(q => q.Where(i => i.Id == id)
@@ -38,6 +41,7 @@ namespace api_cinema_challenge.Endpoints
             return TypedResults.Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         private static async Task<IResult> CreateCustomer(IGenericRepository<Customer> repository, CustomerPost newCustomer)
         {
             Customer customer = new Customer(newCustomer);
@@ -45,7 +49,7 @@ namespace api_cinema_challenge.Endpoints
             CustomerGetNoExtra customerFormated = new CustomerGetNoExtra(response);
             return TypedResults.Created("", customerFormated);
         }
-
+        [Authorize(Roles = "Admin")]
         private static async Task<IResult> UpdateCustomer(IGenericRepository<Customer> repository, int id, CustomerPut model)
         {
             Customer entity = await repository.GetByIdWithIncludes(q => q.Where(i => i.Id == id)
@@ -59,6 +63,7 @@ namespace api_cinema_challenge.Endpoints
             var response = await repository.Update(entity);
             return TypedResults.Created("", new CustomerGetNoExtra(response));
         }
+        [Authorize(Roles = "Admin")]
         private static async Task<IResult> DeleteCustomer(IGenericRepository<Customer> repository, int id)
         {
             Customer entity = await repository.GetByIdWithIncludes(q => q.Where(i => i.Id == id).FirstOrDefaultAsync().Result);

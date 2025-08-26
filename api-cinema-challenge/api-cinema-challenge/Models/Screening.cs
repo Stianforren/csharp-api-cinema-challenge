@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace api_cinema_challenge.Models
 {
     [Table("screenings")]
-    public class Screening : IEntity
+    public class Screening
     {
         [Key]
         [Column("screening_id")]

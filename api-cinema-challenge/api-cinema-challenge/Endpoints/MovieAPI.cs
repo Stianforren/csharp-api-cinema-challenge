@@ -1,8 +1,8 @@
-﻿using api_cinema_challenge.DOTs.CustomerDTOs;
-using api_cinema_challenge.DOTs.MovieDTOs;
+﻿using api_cinema_challenge.DOTs.MovieDTOs;
 using api_cinema_challenge.DOTs.ScreeningDTOs;
 using api_cinema_challenge.Models;
 using api_cinema_challenge.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace api_cinema_challenge.Endpoints
@@ -31,6 +31,7 @@ namespace api_cinema_challenge.Endpoints
             return TypedResults.Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         private static async Task<IResult> CreateMovie(IGenericRepository<Movie> repository, MoviePost movie)
         {
             Movie newMovie = new Movie(movie);
@@ -38,6 +39,7 @@ namespace api_cinema_challenge.Endpoints
             return TypedResults.Created("", new MovieGet(response));
         }
 
+        [Authorize(Roles = "Admin")]
         private static async Task<IResult> UpdateMovie(IGenericRepository<Movie> repository, int id, MoviePut model)
         {
             Movie entity = await repository.GetByIdWithIncludes(m => m.Where(i => i.Id == id)
@@ -54,6 +56,7 @@ namespace api_cinema_challenge.Endpoints
             return TypedResults.Created("", new MovieGet(response));
         }
 
+        [Authorize(Roles = "Admin")]
         private static async Task<IResult> DeleteMovie(IGenericRepository<Movie> repository, int id)
         {
             Movie entity = await repository.GetByIdWithIncludes(q => q.Where(i => i.Id == id).FirstOrDefaultAsync().Result);
@@ -61,6 +64,7 @@ namespace api_cinema_challenge.Endpoints
             return TypedResults.Ok(entity);
         }
 
+        [Authorize(Roles = "Admin")]
         private static async Task<IResult> CreateScreening(IGenericRepository<Screening> repository, int movieId, ScreeningPost model)
         {
             Screening entity = new Screening(model);
@@ -68,6 +72,7 @@ namespace api_cinema_challenge.Endpoints
             var response = await repository.Create(entity);
             return TypedResults.Created("", new ScreeningGet(response));
         }
+        [Authorize(Roles = "User")]
         private static async Task<IResult> GetScreeningsForMovie(IGenericRepository<Screening> repository, int movieId)
         {
             var response = await repository.GetWithIncludes(s => s.Where(i => i.MovieId == movieId));
