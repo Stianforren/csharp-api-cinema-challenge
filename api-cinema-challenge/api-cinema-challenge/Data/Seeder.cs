@@ -160,6 +160,7 @@ namespace api_cinema_challenge.Data
                 ticket.Id = a;
                 ticket.ScreeningId = _screenings[screeningRandom.Next(_screenings.Count)].Id;
                 ticket.CustomerId = _customers[screeningRandom.Next(_customers.Count)].Id;
+                ticket.numSeats = ticketRandom.Next(1, 3);
                 _tickets.Add(ticket);
             }
 

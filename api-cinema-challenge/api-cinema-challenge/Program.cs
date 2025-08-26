@@ -63,6 +63,7 @@ builder.Services.AddDbContext<CinemaContext>(opt =>
 builder.Services.AddScoped<IGenericRepository<Customer>, GenericRepository<Customer>>();
 builder.Services.AddScoped<IGenericRepository<Movie>, GenericRepository<Movie>>();
 builder.Services.AddScoped<IGenericRepository<Screening>, GenericRepository<Screening>>();
+builder.Services.AddScoped<IGenericRepository<Ticket>, GenericRepository<Ticket>>();
 builder.Services.AddScoped<TokenService, TokenService>();
 
 
@@ -130,4 +131,5 @@ app.UseAuthorization();
 app.ConfigueMovie();
 app.ConfigueCustomer();
 app.MapControllers();
+
 app.Run();
